@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Get RemitPe</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #fafafa;
+      color: #09090B;
+      padding: 1.5rem;
+    }
+    main {
+      width: min(24rem, 100%);
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 0.5rem; }
+    p { margin: 0 0 1rem; color: #52525b; line-height: 1.4; }
+    .links { display: grid; gap: 0.75rem; }
+    a {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      font-weight: 600;
+    }
+    .play { background: #064E3B; color: #fff; }
+    .apple { background: #09090B; color: #fff; }
+    .site { background: #e0f2fe; color: #0284C7; }
+  </style>
+  <script>
+    (function () {
+      // Set this when the App Store listing is live, e.g. "1234567890"
+      var APP_STORE_ID = '';
+      var PLAY_ID = 'com.remitpe';
+
+      var params = new URLSearchParams(window.location.search);
+      var code = (params.get('code') || params.get('referral_code') || '').trim();
+      if (!code) {
+        var pathMatch = /\/(?:join\/(?:link\/)?|download\/?)([A-Za-z0-9_-]{4,64})\/?$/.exec(window.location.pathname);
+        code = pathMatch ? pathMatch[1] : '';
+      }
+
+      var website = 'https://www.remitpe.com/';
+      if (code) {
+        website += '?referral_code=' + encodeURIComponent(code);
+      }
+
+      var play = 'https://play.google.com/store/apps/details?id=' + encodeURIComponent(PLAY_ID);
+      if (code) {
+        play += '&referrer=' + encodeURIComponent('referral_code=' + code);
+      }
+
+      var apple = APP_STORE_ID
+        ? 'https://apps.apple.com/app/id' + encodeURIComponent(APP_STORE_ID)
+        : 'itms-apps://itunes.apple.com/search?term=RemitPe&entity=software';
+
+      var agent = navigator.userAgent || '';
+      var isAndroid = /android/i.test(agent);
+      var isIOS = /iPad|iPhone|iPod/i.test(agent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      function setFallbacks() {
+        var playLink = document.getElementById('play');
+        var appleLink = document.getElementById('apple');
+        var siteLink = document.getElementById('site');
+        if (playLink) playLink.href = play;
+        if (appleLink) appleLink.href = APP_STORE_ID ? apple : website;
+        if (siteLink) siteLink.href = website;
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setFallbacks);
+      } else {
+        setFallbacks();
+      }
+
+      if (isAndroid) {
+        window.location.replace(play);
+        return;
+      }
+      if (isIOS) {
+        window.location.replace(apple);
+        // If the App Store scheme is blocked, land on the site after a moment.
+        setTimeout(function () {
+          window.location.replace(website);
+        }, 1200);
+        return;
+      }
+    })();
+  </script>
+</head>
+<body>
+  <main>
+    <h1>Get RemitPe</h1>
+    <p>Choose your store if you were not redirected automatically.</p>
+    <div class="links">
+      <a id="play" class="play" href="https://play.google.com/store/apps/details?id=com.remitpe">Google Play</a>
+      <a id="apple" class="apple" href="https://www.remitpe.com/">App Store</a>
+      <a id="site" class="site" href="https://www.remitpe.com/">RemitPe website</a>
+    </div>
+  </main>
+</body>
+</html>
